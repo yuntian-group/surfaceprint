@@ -26,17 +26,19 @@ Apptainer environment.
 
 ## Data
 
-Download [merged_dataset.tar.zst](https://drive.google.com/file/d/1Olau3eFQmb0nt5YuD_v4tDuLipxdt07p/view)
-(163 MiB), place it in `dataset/`, and extract it with `zstd` installed:
+Load [yuntian-group/surfaceprint](https://huggingface.co/datasets/yuntian-group/surfaceprint)
+and save it for the training scripts:
 
-```bash
-mkdir -p dataset
-zstd -dc dataset/merged_dataset.tar.zst | tar -xf - -C dataset
+```python
+from datasets import load_dataset
+
+data = load_dataset("yuntian-group/surfaceprint")
+data.save_to_disk("dataset/merged_dataset")
 ```
 
-The extracted Hugging Face dataset has `train`, `val`, and `test` splits at
-`dataset/merged_dataset/`. Each row contains a prompt, response, generator, and
-source dataset. See [the data format and sources](docs/data.md) for column
+The dataset has 191,372 training rows, 47,841 validation rows (`val`), and 95,763
+test rows. Each row contains a prompt, response, generator, and source dataset.
+See [the data format and sources](docs/data.md) for column
 definitions and the exact model identifiers used by the scripts.
 
 ## Train and evaluate

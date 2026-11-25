@@ -1,13 +1,14 @@
 # Data
 
-The [dataset archive](https://drive.google.com/file/d/1Olau3eFQmb0nt5YuD_v4tDuLipxdt07p/view) contains human writing and model generations from four domains. Extract it to `dataset/merged_dataset/`. It is a Hugging Face `DatasetDict` saved with `save_to_disk`.
+The [Hugging Face dataset](https://huggingface.co/datasets/yuntian-group/surfaceprint) contains 334,976 rows of human writing and model generations from four domains.
 
 ```python
-from datasets import load_from_disk
+from datasets import load_dataset
 
-data = load_from_disk("dataset/merged_dataset")
+data = load_dataset("yuntian-group/surfaceprint")
 for split, rows in data.items():
     print(split, len(rows), rows.column_names)
+data.save_to_disk("dataset/merged_dataset")
 ```
 
 ## Fields
@@ -24,9 +25,9 @@ The detector uses `response` by default. For binary detection, `source == "human
 
 ## Splits
 
-The archive has `train`, `val`, and `test` splits. Use `train` to fit detectors, `val` to select settings, and `test` to report results. The unified detector scripts train on `train` and evaluate on `test`.
+The dataset has 191,372 rows in `train`, 47,841 in `val`, and 95,763 in `test`. Use `train` to fit detectors, `val` to select settings, and `test` to report results. The unified detector scripts train on `train` and evaluate on `test`.
 
-The paper's sampling design uses 2,000 training prompts, 500 validation prompts, and 1,000 test prompts from each domain. Prompt counts differ from row counts: a prompt has human writing and generations from multiple models. The code above prints the archive's row counts.
+The paper's sampling design uses 2,000 training prompts, 500 validation prompts, and 1,000 test prompts from each domain. Prompt counts differ from row counts: a prompt has human writing and generations from multiple models. [Per-domain and per-model counts](https://huggingface.co/datasets/yuntian-group/surfaceprint/blob/main/statistics.json) are included with the dataset.
 
 ## Domains and original datasets
 
@@ -35,7 +36,7 @@ The paper's sampling design uses 2,000 training prompts, 500 validation prompts,
 - `stackmathqa`: mathematics questions and answers from [StackMathQA](https://huggingface.co/datasets/math-ai/StackMathQA). Its card lists CC BY 4.0.
 - `stackprogram`: programming questions and answers from [Hugging Face H4 Stack Exchange Preferences](https://huggingface.co/datasets/HuggingFaceH4/stack-exchange-preferences), restricted to programming topics and posts before November 2022. Its card lists CC BY-SA 4.0.
 
-These licenses describe the original datasets. The Stack Exchange source requires attribution to the original posts and their authors. The merged archive stores dataset identifiers but does not include original-post URLs or author metadata.
+These licenses apply to the original questions and human responses. [Programming post and author attribution](https://huggingface.co/datasets/yuntian-group/surfaceprint/blob/main/attribution/stackprogram.jsonl) is stored separately from the five text fields.
 
 ## Model identifiers
 
