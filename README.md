@@ -120,3 +120,8 @@ Markdown, math, code, or whitespace.
   year = {2027}
 }
 ```
+
+## License
+
+The code is released under the [MIT License](LICENSE).
+Dataset source licenses are listed in [the data documentation](docs/data.md).
