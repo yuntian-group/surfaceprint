@@ -44,7 +44,7 @@ dataset/merged_dataset
 
 Download the prebuilt archive from Google Drive:
 
-[merged_dataset.tar.zst TO BE RELEASED AFTER REVIEW]()
+[merged_dataset.tar.zst on Google Drive](https://drive.google.com/file/d/1Olau3eFQmb0nt5YuD_v4tDuLipxdt07p/view)
 
 Place the downloaded `merged_dataset.tar.zst` file under `dataset/` and extract it so the final layout is `dataset/merged_dataset/`:
 
