@@ -28,7 +28,7 @@ INSTRUCT_MODELS=(
 PKL="${OUTPUT_DIR}/unified_binary_raw_tree_depth5.pkl"
 METRICS_JSON="${OUTPUT_DIR}/unified_binary_raw_tree_depth5.metrics.json"
 
-echo "=== Training unified binary detector, tree max_depth=3 (${#INSTRUCT_MODELS[@]} instruct models) ==="
+echo "=== Training unified binary detector, tree max_depth=5 (${#INSTRUCT_MODELS[@]} instruct models) ==="
 python train_merged_ascii_unified_detector.py \
   --dataset-path "${DATASET_PATH}" \
   --ascii-detector binary \

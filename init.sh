@@ -1,48 +1,46 @@
-#!/bin/bash
-# Template: fill in FILL_ME values. See README §2.
+#!/usr/bin/env bash
 
-INIT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CONTAINER_IMAGE="${CONTAINER_IMAGE:-${INIT_ROOT}/container/venv/surfaceprint.sif}"
+SURFACEPRINT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CONTAINER_IMAGE="${CONTAINER_IMAGE:-${SURFACEPRINT_ROOT}/container/venv/surfaceprint.sif}"
 
-export APPTAINERENV_HF_TOKEN="FILL_ME_huggingface_token"
-export APPTAINERENV_OPENAI_API_KEY="FILL_ME_openai_key"
-export APPTAINERENV_ANTHROPIC_API_KEY="FILL_ME_anthropic_key"
-export APPTAINERENV_GOOGLE_API_KEY="FILL_ME_google_genai_key"
-export APPTAINERENV_GEMINI_API_KEY="${APPTAINERENV_GOOGLE_API_KEY}"
-export APPTAINERENV_OPENROUTER_API_KEY="FILL_ME_openrouter_key"
+run_in_apptainer() (
+    set -euo pipefail
+    if [[ ! -f "$CONTAINER_IMAGE" ]]; then
+        echo "Container image not found: $CONTAINER_IMAGE" >&2
+        echo "Build it with: bash container/build.sh" >&2
+        return 1
+    fi
+    command -v apptainer >/dev/null || { echo "apptainer is not installed." >&2; return 1; }
 
-export APPTAINERENV_SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
-export APPTAINERENV_REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
-export APPTAINERENV_CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
+    if [[ -n "${HF_TOKEN:-}" ]]; then
+        export APPTAINERENV_HF_TOKEN="$HF_TOKEN"
+    fi
 
-# export APPTAINERENV_HF_HOME="FILL_ME_hf_cache_dir"
-# export APPTAINERENV_DATASET_BASE_PATH="FILL_ME_dataset_root"
+    local apptainer_args=(exec)
+    case "${SURFACEPRINT_GPU:-1}" in
+        1) apptainer_args+=(--nv) ;;
+        0) ;;
+        *) echo "SURFACEPRINT_GPU must be 0 or 1." >&2; return 1 ;;
+    esac
 
-_apptainer_bind_flags=(
-  --bind "${INIT_ROOT}:${INIT_ROOT}"
-  # --bind /model-weights:/model-weights
-  # --bind /scratch:/scratch
+    apptainer "${apptainer_args[@]}" \
+        --bind "${SURFACEPRINT_ROOT}:${SURFACEPRINT_ROOT}" "$CONTAINER_IMAGE" \
+        bash -c '
+            set -euo pipefail
+            surfaceprint_root="$1"
+            shift
+            cd "$surfaceprint_root"
+            export PYTHONPATH="$surfaceprint_root${PYTHONPATH:+:$PYTHONPATH}"
+            exec "$@"
+        ' surfaceprint "$SURFACEPRINT_ROOT" "$@"
 )
 
-# module load apptainer
-
-if [[ ! -e "${CONTAINER_IMAGE}" ]]; then
-  echo "init.sh: container image not found at ${CONTAINER_IMAGE}" >&2
-  echo "  Build with: bash container/build.sh" >&2
+if [[ "${BASH_SOURCE[0]}" != "$0" ]]; then
+    return 0
 fi
 
-_inside='export PYTHONPATH="'"${INIT_ROOT}"':${PYTHONPATH:-}"'
-
-run_in_apptainer() {
-  apptainer exec --nv "${_apptainer_bind_flags[@]}" "${CONTAINER_IMAGE}" \
-    bash -c "set -euo pipefail; cd '${INIT_ROOT}' && ${_inside} && exec \"\$@\"" bash "$@"
-}
-
-[[ "${BASH_SOURCE[0]}" != "${0}" ]] && return 0 2>/dev/null
-
 if [[ $# -eq 0 ]]; then
-  apptainer exec --nv "${_apptainer_bind_flags[@]}" "${CONTAINER_IMAGE}" \
-    bash -lc "cd '${INIT_ROOT}' && ${_inside} && exec bash -l"
+    run_in_apptainer bash -l
 else
-  run_in_apptainer "$@"
+    run_in_apptainer "$@"
 fi

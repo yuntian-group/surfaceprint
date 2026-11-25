@@ -10,7 +10,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "${ROOT}"
 
 DATASET_PATH="${DATASET_PATH:-dataset/merged_dataset}"
-PLANS_JSON="${PLANS_JSON:-scripts/generalization/one_to_all_other.json}"
+PLANS_JSON="${PLANS_JSON:-configs/generalization/one_to_all.json}"
 OUTPUT_DIR="${OUTPUT_DIR:-models/generalization_one_to_all_other}"
 if [[ -z "${PLAN_WORKERS:-}" ]]; then
   PLAN_WORKERS="$(python -c "import json; print(len(json.load(open('${PLANS_JSON}'))))")"

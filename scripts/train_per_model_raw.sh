@@ -4,7 +4,7 @@ set -euo pipefail
 # Train one ASCII detector per model (human vs target model) on the merged dataset,
 # write per-model metrics JSON next to each .pkl, and merge into one summary JSON.
 # Run from the repository root:
-#   bash scripts/train_single_model_all_data_raw.sh
+#   bash scripts/train_per_model_raw.sh
 
 DATASET_PATH="${DATASET_PATH:-dataset/merged_dataset}"
 OUTPUT_DIR="${OUTPUT_DIR:-models/merged_ascii_detectors_raw}"

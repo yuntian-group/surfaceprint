@@ -3,7 +3,7 @@ set -euo pipefail
 
 # Example commands for training multiclass ASCII "author" (source) classifiers.
 # Run from the repository root:
-#   bash scripts/train_merged_ascii_author_classifier.sh
+#   bash scripts/train_authorship_ws.sh
 
 DATASET_PATH="${DATASET_PATH:-dataset/merged_dataset}"
 OUTPUT_DIR="${OUTPUT_DIR:-models/merged_ascii_author_classifiers}"
@@ -33,21 +33,6 @@ python train_merged_ascii_author_classifier.py \
   --dataset-path "${DATASET_PATH}" \
   --include-source "${INSTRUCT_MODELS[@]}" \
   --classifier forest \
-  --normalize-mode raw \
-  --output "${OUTPUT_DIR}/models_only_forest_raw.pkl" \
-  --metrics-json "${OUTPUT_DIR}/results_raw.json" \
-
-
-# python train_merged_ascii_author_classifier.py \
-#   --dataset-path "${DATASET_PATH}" \
-#   --include-source "${INSTRUCT_MODELS[@]}" \
-#   --classifier logreg \
-#   --normalize-mode whitespace \
-#   --output "${OUTPUT_DIR}/models_only_logreg.pkl"
-
-# python train_merged_ascii_author_classifier.py \
-#   --dataset-path "${DATASET_PATH}" \
-#   --include-source "${INSTRUCT_MODELS[@]}" \
-#   --classifier tree \
-#   --normalize-mode whitespace \
-#   --output "${OUTPUT_DIR}/models_only_tree.pkl"
+  --normalize-mode whitespace \
+  --output "${OUTPUT_DIR}/models_only_forest.pkl" \
+  --metrics-json "${OUTPUT_DIR}/results.json"

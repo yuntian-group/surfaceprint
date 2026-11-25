@@ -57,10 +57,10 @@ def add_ascii_detector_arg(parser: argparse.ArgumentParser) -> None:
         choices=ASCII_DETECTOR_CHOICES,
         default="full",
         help=(
-            "'full': ParaPunct/rate features (detectors.ascii_detector.ASCIIDetector). "
-            "'basic': 45 binary discovery features "
+            "'full': SurfacePrint/rate features (detectors.ascii_detector.ASCIIDetector). "
+            "'basic': 45 character, word, and formatting indicators "
             "(detectors.ascii_detector_basic.ASCIIDetectorBasic). "
-            "'binary': 97 binary ParaPunct presence features "
+            "'binary': 97 binary SurfacePrint presence features "
             "(detectors.ascii_detector_binary.ASCIIDetectorBinary)."
         ),
     )
@@ -145,7 +145,7 @@ def build_labels(ds: Dataset, label_mode: str, target_source: str | None) -> lis
 
 
 def normalize_whitespace(text: str) -> str:
-    """D-NORM text view: delete space and newline shortcuts."""
+    """Delete ASCII spaces, tabs, carriage returns, and newlines."""
     return text.translate(str.maketrans("", "", " \t\r\n"))
 
 
@@ -357,8 +357,8 @@ def parse_args() -> argparse.Namespace:
         choices=["raw", "whitespace"],
         default="raw",
         help=(
-            "'raw' trains on original text. 'whitespace' normalizes line endings, "
-            "trailing whitespace, repeated inline spaces, and 3+ newlines for D-NORM."
+            "'raw' strips leading and trailing whitespace. 'whitespace' deletes "
+            "ASCII spaces, tabs, carriage returns, and newlines."
         ),
     )
     parser.add_argument(

@@ -1,4 +1,4 @@
-"""Binary ParaPunct detector: one presence bit per feature in ascii_detector."""
+"""Binary SurfacePrint detector: one presence bit per feature in ascii_detector."""
 
 from __future__ import annotations
 
@@ -808,7 +808,7 @@ def extract_features(
     text: str,
     disabled_feature_groups: Sequence[str] | str | None = None,
 ) -> np.ndarray:
-    """Extract the binary ParaPunct feature vector from a string.
+    """Extract the binary SurfacePrint feature vector from a string.
 
     Returns
     -------
@@ -834,7 +834,7 @@ def extract_feature_matrix(
 
 
 class ASCIIDetectorBinary(BaseDetector):
-    """Decision-tree detector over binary ParaPunct features.
+    """Classifier over binary SurfacePrint features.
 
     Config keys match :class:`detectors.ascii_detector.ASCIIDetector`.
     """

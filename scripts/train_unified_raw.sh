@@ -5,10 +5,10 @@ set -euo pipefail
 # instruction-tuned sources, then evaluate per-model AUROC/AUPRC on the test split
 # (human + each instruct source separately, using full test samples).
 # Run from the repository root:
-#   bash scripts/train_unified_ascii_detector_all_data.sh
+#   bash scripts/train_unified_raw.sh
 
 DATASET_PATH="${DATASET_PATH:-dataset/merged_dataset}"
-OUTPUT_DIR="${OUTPUT_DIR:-models/merged_unified_ascii_detectors_whitespace_normalization}"
+OUTPUT_DIR="${OUTPUT_DIR:-models/surfaceprint_raw}"
 mkdir -p "${OUTPUT_DIR}"
 
 INSTRUCT_MODELS=(
@@ -31,13 +31,13 @@ INSTRUCT_MODELS=(
   "google/gemma-4-E4B-it"
 )
 
-PKL="${OUTPUT_DIR}/unified_human_vs_instruct.pkl"
-METRICS_JSON="${OUTPUT_DIR}/unified_human_vs_instruct.metrics.json"
+PKL="${OUTPUT_DIR}/surfaceprint_raw.pkl"
+METRICS_JSON="${OUTPUT_DIR}/surfaceprint_raw.metrics.json"
 
 echo "=== Training unified detector (${#INSTRUCT_MODELS[@]} instruct models) ==="
 python train_merged_ascii_unified_detector.py \
   --dataset-path "${DATASET_PATH}" \
-  --normalize-mode whitespace \
+  --normalize-mode raw \
   --include-dataset writingprompts reddit_eli5 stackmathqa stackprogram \
   --instruct-source "${INSTRUCT_MODELS[@]}" \
   --split train \

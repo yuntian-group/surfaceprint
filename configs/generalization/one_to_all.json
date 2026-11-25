@@ -1,0 +1,427 @@
+[
+  {
+    "name": "gpt-5.4-mini",
+    "train_sources": [
+      "gpt-5.4-mini"
+    ],
+    "test_sources": [
+      "gpt-5.4-mini",
+      "gpt-4.1-mini",
+      "gpt-4o-mini",
+      "gpt-3.5-turbo",
+      "anthropic/claude-3-haiku",
+      "anthropic/claude-3.5-haiku",
+      "anthropic/claude-sonnet-4",
+      "claude-sonnet-4-6",
+      "gemini-2.5-flash",
+      "gemini-3.5-flash",
+      "google/gemini-2.0-flash-001",
+      "facebook/opt-iml-1.3b",
+      "/model-weights/Llama-2-7b-chat-hf/",
+      "meta-llama/Llama-3.1-8B-Instruct",
+      "allenai/Olmo-3-7B-Instruct",
+      "/model-weights/Qwen3.5-9B",
+      "google/gemma-4-E4B-it"
+    ]
+  },
+  {
+    "name": "gpt-4.1-mini",
+    "train_sources": [
+      "gpt-4.1-mini"
+    ],
+    "test_sources": [
+      "gpt-5.4-mini",
+      "gpt-4.1-mini",
+      "gpt-4o-mini",
+      "gpt-3.5-turbo",
+      "anthropic/claude-3-haiku",
+      "anthropic/claude-3.5-haiku",
+      "anthropic/claude-sonnet-4",
+      "claude-sonnet-4-6",
+      "gemini-2.5-flash",
+      "gemini-3.5-flash",
+      "google/gemini-2.0-flash-001",
+      "facebook/opt-iml-1.3b",
+      "/model-weights/Llama-2-7b-chat-hf/",
+      "meta-llama/Llama-3.1-8B-Instruct",
+      "allenai/Olmo-3-7B-Instruct",
+      "/model-weights/Qwen3.5-9B",
+      "google/gemma-4-E4B-it"
+    ]
+  },
+  {
+    "name": "gpt-4o-mini",
+    "train_sources": [
+      "gpt-4o-mini"
+    ],
+    "test_sources": [
+      "gpt-5.4-mini",
+      "gpt-4.1-mini",
+      "gpt-4o-mini",
+      "gpt-3.5-turbo",
+      "anthropic/claude-3-haiku",
+      "anthropic/claude-3.5-haiku",
+      "anthropic/claude-sonnet-4",
+      "claude-sonnet-4-6",
+      "gemini-2.5-flash",
+      "gemini-3.5-flash",
+      "google/gemini-2.0-flash-001",
+      "facebook/opt-iml-1.3b",
+      "/model-weights/Llama-2-7b-chat-hf/",
+      "meta-llama/Llama-3.1-8B-Instruct",
+      "allenai/Olmo-3-7B-Instruct",
+      "/model-weights/Qwen3.5-9B",
+      "google/gemma-4-E4B-it"
+    ]
+  },
+  {
+    "name": "gpt-3.5-turbo",
+    "train_sources": [
+      "gpt-3.5-turbo"
+    ],
+    "test_sources": [
+      "gpt-5.4-mini",
+      "gpt-4.1-mini",
+      "gpt-4o-mini",
+      "gpt-3.5-turbo",
+      "anthropic/claude-3-haiku",
+      "anthropic/claude-3.5-haiku",
+      "anthropic/claude-sonnet-4",
+      "claude-sonnet-4-6",
+      "gemini-2.5-flash",
+      "gemini-3.5-flash",
+      "google/gemini-2.0-flash-001",
+      "facebook/opt-iml-1.3b",
+      "/model-weights/Llama-2-7b-chat-hf/",
+      "meta-llama/Llama-3.1-8B-Instruct",
+      "allenai/Olmo-3-7B-Instruct",
+      "/model-weights/Qwen3.5-9B",
+      "google/gemma-4-E4B-it"
+    ]
+  },
+  {
+    "name": "anthropic_claude-3-haiku",
+    "train_sources": [
+      "anthropic/claude-3-haiku"
+    ],
+    "test_sources": [
+      "gpt-5.4-mini",
+      "gpt-4.1-mini",
+      "gpt-4o-mini",
+      "gpt-3.5-turbo",
+      "anthropic/claude-3-haiku",
+      "anthropic/claude-3.5-haiku",
+      "anthropic/claude-sonnet-4",
+      "claude-sonnet-4-6",
+      "gemini-2.5-flash",
+      "gemini-3.5-flash",
+      "google/gemini-2.0-flash-001",
+      "facebook/opt-iml-1.3b",
+      "/model-weights/Llama-2-7b-chat-hf/",
+      "meta-llama/Llama-3.1-8B-Instruct",
+      "allenai/Olmo-3-7B-Instruct",
+      "/model-weights/Qwen3.5-9B",
+      "google/gemma-4-E4B-it"
+    ]
+  },
+  {
+    "name": "anthropic_claude-3.5-haiku",
+    "train_sources": [
+      "anthropic/claude-3.5-haiku"
+    ],
+    "test_sources": [
+      "gpt-5.4-mini",
+      "gpt-4.1-mini",
+      "gpt-4o-mini",
+      "gpt-3.5-turbo",
+      "anthropic/claude-3-haiku",
+      "anthropic/claude-3.5-haiku",
+      "anthropic/claude-sonnet-4",
+      "claude-sonnet-4-6",
+      "gemini-2.5-flash",
+      "gemini-3.5-flash",
+      "google/gemini-2.0-flash-001",
+      "facebook/opt-iml-1.3b",
+      "/model-weights/Llama-2-7b-chat-hf/",
+      "meta-llama/Llama-3.1-8B-Instruct",
+      "allenai/Olmo-3-7B-Instruct",
+      "/model-weights/Qwen3.5-9B",
+      "google/gemma-4-E4B-it"
+    ]
+  },
+  {
+    "name": "anthropic_claude-sonnet-4",
+    "train_sources": [
+      "anthropic/claude-sonnet-4"
+    ],
+    "test_sources": [
+      "gpt-5.4-mini",
+      "gpt-4.1-mini",
+      "gpt-4o-mini",
+      "gpt-3.5-turbo",
+      "anthropic/claude-3-haiku",
+      "anthropic/claude-3.5-haiku",
+      "anthropic/claude-sonnet-4",
+      "claude-sonnet-4-6",
+      "gemini-2.5-flash",
+      "gemini-3.5-flash",
+      "google/gemini-2.0-flash-001",
+      "facebook/opt-iml-1.3b",
+      "/model-weights/Llama-2-7b-chat-hf/",
+      "meta-llama/Llama-3.1-8B-Instruct",
+      "allenai/Olmo-3-7B-Instruct",
+      "/model-weights/Qwen3.5-9B",
+      "google/gemma-4-E4B-it"
+    ]
+  },
+  {
+    "name": "claude-sonnet-4-6",
+    "train_sources": [
+      "claude-sonnet-4-6"
+    ],
+    "test_sources": [
+      "gpt-5.4-mini",
+      "gpt-4.1-mini",
+      "gpt-4o-mini",
+      "gpt-3.5-turbo",
+      "anthropic/claude-3-haiku",
+      "anthropic/claude-3.5-haiku",
+      "anthropic/claude-sonnet-4",
+      "claude-sonnet-4-6",
+      "gemini-2.5-flash",
+      "gemini-3.5-flash",
+      "google/gemini-2.0-flash-001",
+      "facebook/opt-iml-1.3b",
+      "/model-weights/Llama-2-7b-chat-hf/",
+      "meta-llama/Llama-3.1-8B-Instruct",
+      "allenai/Olmo-3-7B-Instruct",
+      "/model-weights/Qwen3.5-9B",
+      "google/gemma-4-E4B-it"
+    ]
+  },
+  {
+    "name": "gemini-2.5-flash",
+    "train_sources": [
+      "gemini-2.5-flash"
+    ],
+    "test_sources": [
+      "gpt-5.4-mini",
+      "gpt-4.1-mini",
+      "gpt-4o-mini",
+      "gpt-3.5-turbo",
+      "anthropic/claude-3-haiku",
+      "anthropic/claude-3.5-haiku",
+      "anthropic/claude-sonnet-4",
+      "claude-sonnet-4-6",
+      "gemini-2.5-flash",
+      "gemini-3.5-flash",
+      "google/gemini-2.0-flash-001",
+      "facebook/opt-iml-1.3b",
+      "/model-weights/Llama-2-7b-chat-hf/",
+      "meta-llama/Llama-3.1-8B-Instruct",
+      "allenai/Olmo-3-7B-Instruct",
+      "/model-weights/Qwen3.5-9B",
+      "google/gemma-4-E4B-it"
+    ]
+  },
+  {
+    "name": "gemini-3.5-flash",
+    "train_sources": [
+      "gemini-3.5-flash"
+    ],
+    "test_sources": [
+      "gpt-5.4-mini",
+      "gpt-4.1-mini",
+      "gpt-4o-mini",
+      "gpt-3.5-turbo",
+      "anthropic/claude-3-haiku",
+      "anthropic/claude-3.5-haiku",
+      "anthropic/claude-sonnet-4",
+      "claude-sonnet-4-6",
+      "gemini-2.5-flash",
+      "gemini-3.5-flash",
+      "google/gemini-2.0-flash-001",
+      "facebook/opt-iml-1.3b",
+      "/model-weights/Llama-2-7b-chat-hf/",
+      "meta-llama/Llama-3.1-8B-Instruct",
+      "allenai/Olmo-3-7B-Instruct",
+      "/model-weights/Qwen3.5-9B",
+      "google/gemma-4-E4B-it"
+    ]
+  },
+  {
+    "name": "google_gemini-2.0-flash-001",
+    "train_sources": [
+      "google/gemini-2.0-flash-001"
+    ],
+    "test_sources": [
+      "gpt-5.4-mini",
+      "gpt-4.1-mini",
+      "gpt-4o-mini",
+      "gpt-3.5-turbo",
+      "anthropic/claude-3-haiku",
+      "anthropic/claude-3.5-haiku",
+      "anthropic/claude-sonnet-4",
+      "claude-sonnet-4-6",
+      "gemini-2.5-flash",
+      "gemini-3.5-flash",
+      "google/gemini-2.0-flash-001",
+      "facebook/opt-iml-1.3b",
+      "/model-weights/Llama-2-7b-chat-hf/",
+      "meta-llama/Llama-3.1-8B-Instruct",
+      "allenai/Olmo-3-7B-Instruct",
+      "/model-weights/Qwen3.5-9B",
+      "google/gemma-4-E4B-it"
+    ]
+  },
+  {
+    "name": "facebook_opt-iml-1.3b",
+    "train_sources": [
+      "facebook/opt-iml-1.3b"
+    ],
+    "test_sources": [
+      "gpt-5.4-mini",
+      "gpt-4.1-mini",
+      "gpt-4o-mini",
+      "gpt-3.5-turbo",
+      "anthropic/claude-3-haiku",
+      "anthropic/claude-3.5-haiku",
+      "anthropic/claude-sonnet-4",
+      "claude-sonnet-4-6",
+      "gemini-2.5-flash",
+      "gemini-3.5-flash",
+      "google/gemini-2.0-flash-001",
+      "facebook/opt-iml-1.3b",
+      "/model-weights/Llama-2-7b-chat-hf/",
+      "meta-llama/Llama-3.1-8B-Instruct",
+      "allenai/Olmo-3-7B-Instruct",
+      "/model-weights/Qwen3.5-9B",
+      "google/gemma-4-E4B-it"
+    ]
+  },
+  {
+    "name": "model-weights_Llama-2-7b-chat-hf",
+    "train_sources": [
+      "/model-weights/Llama-2-7b-chat-hf/"
+    ],
+    "test_sources": [
+      "gpt-5.4-mini",
+      "gpt-4.1-mini",
+      "gpt-4o-mini",
+      "gpt-3.5-turbo",
+      "anthropic/claude-3-haiku",
+      "anthropic/claude-3.5-haiku",
+      "anthropic/claude-sonnet-4",
+      "claude-sonnet-4-6",
+      "gemini-2.5-flash",
+      "gemini-3.5-flash",
+      "google/gemini-2.0-flash-001",
+      "facebook/opt-iml-1.3b",
+      "/model-weights/Llama-2-7b-chat-hf/",
+      "meta-llama/Llama-3.1-8B-Instruct",
+      "allenai/Olmo-3-7B-Instruct",
+      "/model-weights/Qwen3.5-9B",
+      "google/gemma-4-E4B-it"
+    ]
+  },
+  {
+    "name": "meta-llama_Llama-3.1-8B-Instruct",
+    "train_sources": [
+      "meta-llama/Llama-3.1-8B-Instruct"
+    ],
+    "test_sources": [
+      "gpt-5.4-mini",
+      "gpt-4.1-mini",
+      "gpt-4o-mini",
+      "gpt-3.5-turbo",
+      "anthropic/claude-3-haiku",
+      "anthropic/claude-3.5-haiku",
+      "anthropic/claude-sonnet-4",
+      "claude-sonnet-4-6",
+      "gemini-2.5-flash",
+      "gemini-3.5-flash",
+      "google/gemini-2.0-flash-001",
+      "facebook/opt-iml-1.3b",
+      "/model-weights/Llama-2-7b-chat-hf/",
+      "meta-llama/Llama-3.1-8B-Instruct",
+      "allenai/Olmo-3-7B-Instruct",
+      "/model-weights/Qwen3.5-9B",
+      "google/gemma-4-E4B-it"
+    ]
+  },
+  {
+    "name": "allenai_Olmo-3-7B-Instruct",
+    "train_sources": [
+      "allenai/Olmo-3-7B-Instruct"
+    ],
+    "test_sources": [
+      "gpt-5.4-mini",
+      "gpt-4.1-mini",
+      "gpt-4o-mini",
+      "gpt-3.5-turbo",
+      "anthropic/claude-3-haiku",
+      "anthropic/claude-3.5-haiku",
+      "anthropic/claude-sonnet-4",
+      "claude-sonnet-4-6",
+      "gemini-2.5-flash",
+      "gemini-3.5-flash",
+      "google/gemini-2.0-flash-001",
+      "facebook/opt-iml-1.3b",
+      "/model-weights/Llama-2-7b-chat-hf/",
+      "meta-llama/Llama-3.1-8B-Instruct",
+      "allenai/Olmo-3-7B-Instruct",
+      "/model-weights/Qwen3.5-9B",
+      "google/gemma-4-E4B-it"
+    ]
+  },
+  {
+    "name": "model-weights_Qwen3.5-9B",
+    "train_sources": [
+      "/model-weights/Qwen3.5-9B"
+    ],
+    "test_sources": [
+      "gpt-5.4-mini",
+      "gpt-4.1-mini",
+      "gpt-4o-mini",
+      "gpt-3.5-turbo",
+      "anthropic/claude-3-haiku",
+      "anthropic/claude-3.5-haiku",
+      "anthropic/claude-sonnet-4",
+      "claude-sonnet-4-6",
+      "gemini-2.5-flash",
+      "gemini-3.5-flash",
+      "google/gemini-2.0-flash-001",
+      "facebook/opt-iml-1.3b",
+      "/model-weights/Llama-2-7b-chat-hf/",
+      "meta-llama/Llama-3.1-8B-Instruct",
+      "allenai/Olmo-3-7B-Instruct",
+      "/model-weights/Qwen3.5-9B",
+      "google/gemma-4-E4B-it"
+    ]
+  },
+  {
+    "name": "google_gemma-4-E4B-it",
+    "train_sources": [
+      "google/gemma-4-E4B-it"
+    ],
+    "test_sources": [
+      "gpt-5.4-mini",
+      "gpt-4.1-mini",
+      "gpt-4o-mini",
+      "gpt-3.5-turbo",
+      "anthropic/claude-3-haiku",
+      "anthropic/claude-3.5-haiku",
+      "anthropic/claude-sonnet-4",
+      "claude-sonnet-4-6",
+      "gemini-2.5-flash",
+      "gemini-3.5-flash",
+      "google/gemini-2.0-flash-001",
+      "facebook/opt-iml-1.3b",
+      "/model-weights/Llama-2-7b-chat-hf/",
+      "meta-llama/Llama-3.1-8B-Instruct",
+      "allenai/Olmo-3-7B-Instruct",
+      "/model-weights/Qwen3.5-9B",
+      "google/gemma-4-E4B-it"
+    ]
+  }
+]

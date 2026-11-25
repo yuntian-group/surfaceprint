@@ -29,7 +29,7 @@ def _strip_code(text: str) -> str:
 
 
 def _safe_ratio(num: int, denom: int, default: float = 0.5) -> float:
-    """Compute num / denom with a sane fallback for denom == 0."""
+    """Compute num / denom or default when denom == 0."""
     return num / denom if denom > 0 else default
 
 
@@ -1483,7 +1483,7 @@ def extract_features(
     text: str,
     disabled_feature_groups: Sequence[str] | str | None = None,
 ) -> np.ndarray:
-    """Extract the FEATURE_DIM-dimensional ParaPunct feature vector from a string.
+    """Extract the FEATURE_DIM-dimensional SurfacePrint feature vector from a string.
 
     Parameters
     ----------
@@ -1519,7 +1519,7 @@ def extract_feature_matrix(
 
 
 class ASCIIDetector(BaseDetector):
-    """Decision-tree detector over the FEATURE_DIM ASCII/style feature functions.
+    """Classifier over the FEATURE_DIM SurfacePrint feature functions.
 
     Config keys:
         model_path: optional pickle path for a trained sklearn-compatible model.

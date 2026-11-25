@@ -1,118 +1,122 @@
-# Official Implementation of SurfacePrint: Typographic Fingerprints of LLMs
+# SurfacePrint: Typographic Fingerprints of LLMs
 
-Short guide for running the scripts in this repo. Always run from the **repository root**.
+Code for **SurfacePrint: Typographic Fingerprints of LLMs**, EACL 2027.
 
-## 1. Build the Environment
+Wentao Zhang, Sajad Ebrahimi, Nima Jamali, Bardia Shirsalimian, Kelly McConvey,
+Jalehsadat Mahdavimoghaddam, Maksym Taranukhin, Maura R. Grossman, Vered Shwartz,
+Ebrahim Bagheri, and Yuntian Deng.
 
-The repo ships an Apptainer (Singularity) definition under `container/`. Build the image once with:
+SurfacePrint detects AI-generated text using 97 features of punctuation,
+whitespace, Markdown, LaTeX, and code formatting. Feature extraction and random
+forest training run on CPU. The paper reports a mean per-generator AUROC of
+0.983 across 17 LLMs and four text domains.
 
-```bash
-bash container/build.sh
-```
+## Installation
 
-This produces `container/venv/surfaceprint.sif` (override with `DEST_DIR=/path bash container/build.sh`). The image contains PyTorch 2.10 + CUDA 12.8, Flash Attention 3, vLLM 0.19, and HuggingFace `transformers`.
-
-Requirements on the host:
-
-- `apptainer` with `--fakeroot` (or root) build privileges
-- A CUDA-capable GPU and matching NVIDIA driver at run time
-- ~30 GB free in `/tmp` for the build cache
-
-## 2. Setup
-
-The repo ships a template `init.sh` at the root. Open it once and fill in the placeholder values (search for `FILL_ME`):
-
-- API keys: `HF_TOKEN` (only required if you pull gated HF models).
-- Optionally: HuggingFace / dataset cache directories, extra `--bind` mounts for shared model-weight or scratch paths, and `module load apptainer` if your cluster needs it.
-- `CONTAINER_IMAGE` defaults to `container/venv/surfaceprint.sif` from step 1.
-
-Then use it three ways:
+Use Python 3.11 or newer. Run the commands below from the repository root.
 
 ```bash
-./init.sh                          # interactive shell inside the container
-./init.sh python my_script.py      # one-shot command inside the container
-source init.sh && run_in_apptainer bash scripts/<some>.sh   # for batch/Slurm
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 ```
 
-## 3. Dataset
+The [GPU baseline instructions](docs/experiments.md#gpu-baselines) use a separate
+Apptainer environment.
 
-Most scripts expect the merged dataset at:
+## Data
 
-```
-dataset/merged_dataset
-```
-
-Download the prebuilt archive from Google Drive:
-
-[merged_dataset.tar.zst on Google Drive](https://drive.google.com/file/d/1Olau3eFQmb0nt5YuD_v4tDuLipxdt07p/view)
-
-Place the downloaded `merged_dataset.tar.zst` file under `dataset/` and extract it so the final layout is `dataset/merged_dataset/`:
+Download [merged_dataset.tar.zst](https://drive.google.com/file/d/1Olau3eFQmb0nt5YuD_v4tDuLipxdt07p/view)
+(163 MiB), place it in `dataset/`, and extract it with `zstd` installed:
 
 ```bash
 mkdir -p dataset
-mv /path/to/merged_dataset.tar.zst dataset/
-tar --use-compress-program=unzstd -xf dataset/merged_dataset.tar.zst -C dataset/
-# or, equivalently:
-# zstd -d dataset/merged_dataset.tar.zst -c | tar -xf - -C dataset/
+zstd -dc dataset/merged_dataset.tar.zst | tar -xf - -C dataset
 ```
 
-After extraction you should see `dataset/merged_dataset/{train,val,test}` and `dataset/merged_dataset/dataset_dict.json`.
+The extracted Hugging Face dataset has `train`, `val`, and `test` splits at
+`dataset/merged_dataset/`. Each row contains a prompt, response, generator, and
+source dataset. See [the data format and sources](docs/data.md) for column
+definitions and the exact model identifiers used by the scripts.
 
-Override the location with the `DATASET_PATH` env var if needed.
+## Train and evaluate
 
-## 4. Train ASCII Detectors (`scripts/`)
-
-
-| What it trains                                                       | Command                                                                                                                     |
-| -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| One detector per model (human vs. each model), whitespace-normalized | `bash scripts/train_single_model_all_data.sh`                                                                               |
-| Same, but on raw (un-normalized) text                                | `bash scripts/train_single_model_all_data_raw_normalize.sh`                                                                 |
-| Unified human-vs-instruct detector, whitespace-normalized            | `bash scripts/train_unified_ascii_detector_all_data.sh`                                                                     |
-| Unified detector, raw text                                           | `bash scripts/train_unified_ascii_detector_all_data_raw_normalization.sh`                                                   |
-| Unified **binary** ASCII features (depth-3 / depth-5 trees)          | `bash scripts/train_unified_binary_ascii_detector_all_data_raw_tree_depth3.sh` / `..._depth5.sh` (also `_ws_norm` variants) |
-| Unified **full** ASCII features (depth-3 / depth-5 trees)            | `bash scripts/train_unified_full_ascii_detector_all_data_raw_tree_depth3.sh` / `..._depth5.sh`                              |
-
-
-Outputs go to `models/...` and per-run metrics JSONs.
-
-## 5. Statistical Baselines (`scripts/statistical/`)
-
-Run one baseline (Likelihood, LogRank, Entropy, LRR, Fast-DetectGPT, DNA-DetectLLM, LastDE++) per target model:
+Train one random forest on human responses and responses from all 17
+instruction-tuned models, then evaluate it on the test split:
 
 ```bash
-bash scripts/statistical/run_baseline_statistical_<model>.sh
+bash scripts/train_unified_raw.sh
 ```
 
-Examples:
+The command writes:
+
+- `models/surfaceprint_raw/surfaceprint_raw.pkl`: the trained classifier.
+- `models/surfaceprint_raw/surfaceprint_raw.metrics.json`: training and test metrics, per-generator AUROC/AUPRC, and preprocessing settings.
+
+`mean_per_model_test_auroc` is the average of the per-generator AUROC values.
+Each generator is evaluated against the human test responses.
+
+Set the data and output directories without editing the script:
 
 ```bash
-bash scripts/statistical/run_baseline_statistical_gpt_4o_mini.sh
-bash scripts/statistical/run_baseline_statistical_llama3_1_8b_instruct.sh
-bash scripts/statistical/run_baseline_statistical_claude_sonnet_4.sh
+DATASET_PATH=/path/to/merged_dataset OUTPUT_DIR=models/surfaceprint \
+  bash scripts/train_unified_raw.sh
 ```
 
-Outputs land in `results/baseline_statistical/<model>/`.
+To train after removing ASCII spaces, tabs, carriage returns, and newlines:
 
-## 6. Generalization Experiments (`scripts/generalization/`)
+```bash
+bash scripts/train_unified_ws.sh
+```
 
+The raw variant strips leading and trailing whitespace and preserves formatting
+inside the response. The two preprocessing modes are defined in
+[`normalize_text`](train_merged_ascii_detector.py).
 
-| Setup                                           | Command                                                                                   |
-| ----------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| Train on one model, test on all others          | `bash scripts/generalization/run_generalization_detector_one_to_all.sh`                   |
-| Train on all-others, test on the held-out model | `bash scripts/generalization/run_generalization_detector_all_other_to_one.sh`             |
-| Open-source → closed-source transfer            | `bash scripts/generalization/run_generalization_detector_open_source_to_closed_source.sh` |
+## Detect AI-generated text
 
+After training, score a UTF-8 text file:
 
-Each has a `..._raw.sh` variant that skips whitespace normalization.
+```bash
+python predict.py \
+  --model models/surfaceprint_raw/surfaceprint_raw.pkl \
+  --file article.txt
+```
 
-## 7. Common Env Overrides
+The command reads the adjacent `.metrics.json` file to use the same features
+and preprocessing as training. It prints one JSON object per input file, for example:
 
+```json
+{"file": "article.txt", "ai_score": 0.87}
+```
 
-| Var                                           | Default                                          | Used by                 |
-| --------------------------------------------- | ------------------------------------------------ | ----------------------- |
-| `DATASET_PATH`                                | `dataset/merged_dataset`                         | most train/eval scripts |
-| `OUTPUT_DIR`                                  | per-script default under `models/` or `results/` | all train scripts       |
-| `MODEL` / `SCORING_MODEL` / `REFERENCE_MODEL` | per-script                                       | statistical baselines   |
-| `CUDA_VISIBLE_DEVICES`                        | `0`                                              | GPU-using scripts       |
+`ai_score` is the classifier's probability for the
+AI class, between 0 and 1. Higher scores indicate AI-generated text. Pass
+several paths after `--file` to score several documents, or use `--text` for a
+single string.
 
+## Experiments
 
+[Experiment commands](docs/experiments.md) cover per-model detection, shallow
+decision trees, model attribution, transfer to unseen models, and GPU baselines.
+
+The feature definitions are in
+[`detectors/ascii_detector.py`](detectors/ascii_detector.py). Their order is
+listed in `FEATURE_NAMES`; `FEATURE_GROUPS` maps each feature to punctuation,
+Markdown, math, code, or whitespace.
+
+## Citation
+
+```bibtex
+@inproceedings{zhang2027surfaceprint,
+  title = {SurfacePrint: Typographic Fingerprints of LLMs},
+  author = {Zhang, Wentao and Ebrahimi, Sajad and Jamali, Nima and
+            Shirsalimian, Bardia and McConvey, Kelly and
+            Mahdavimoghaddam, Jalehsadat and Taranukhin, Maksym and
+            Grossman, Maura R. and Shwartz, Vered and Bagheri, Ebrahim and
+            Deng, Yuntian},
+  booktitle = {Proceedings of the 20th Conference of the European Chapter
+               of the Association for Computational Linguistics},
+  year = {2027}
+}
+```

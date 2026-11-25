@@ -4,9 +4,10 @@ From: nvidia/cuda:12.8.0-cudnn-devel-ubuntu24.04
 %labels
     Author kstarxin
     Version 1.0
-    Description SurfacePrint: Typographic Fingerprints of LLMs — runtime container
+    Description SurfacePrint CUDA environment for statistical and embedding baselines
 
 %post
+    set -eu
     export DEBIAN_FRONTEND=noninteractive
 
     apt-get update && apt-get install -y --no-install-recommends \
@@ -20,37 +21,18 @@ From: nvidia/cuda:12.8.0-cudnn-devel-ubuntu24.04
 
     ln -sf /usr/bin/python3 /usr/bin/python
 
-    # Install uv (fast Python package installer)
     curl -LsSf https://astral.sh/uv/install.sh | sh
     export PATH="/root/.local/bin:$PATH"
 
-    # Minimal build tools (only setuptools/wheel are needed for any source builds
-    # below; no meson/cython/pybind11 because we install flash-attn as a prebuilt
-    # wheel and nothing else in this repo is built from source).
     uv pip install --system --break-system-packages setuptools wheel
 
     # PyTorch (CUDA 12.8)
     uv pip install --system --break-system-packages torch==2.10.0
 
-    # Flash Attention 3 (prebuilt wheel; train_bert_*.py / eval_bert_*.py request
-    # attn_implementation="flash_attention_3" on Qwen3-Embedding).
+    # Qwen3-Embedding training and evaluation use Flash Attention 3.
     uv pip install --system --break-system-packages --no-build-isolation \
         https://github.com/mjun0812/flash-attention-prebuild-wheels/releases/download/v0.8.2/flash_attn_3-3.0.0+cu128torch2.10gite2743ab-cp39-abi3-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
 
-    # vLLM (used by data_creation/inference_backend.py and create_*_model_prompt.py)
-    unset LD_LIBRARY_PATH
-    uv pip install --system --break-system-packages vllm==0.19.0 --torch-backend=auto
-
-    # Core Python dependencies actually imported by this repo.
-    #   - transformers / safetensors / accelerate / datasets : BERT detector training+eval
-    #     and dataset loading (train_merged_ascii_*.py, train_bert_*.py, eval_bert_*.py).
-    #     accelerate is required by the HF Trainer + FSDP2 paths.
-    #   - scikit-learn / numpy / tqdm                        : ASCII detectors, statistical
-    #     baselines, generalization detector.
-    #   - pandas / matplotlib / seaborn                      : analyze/ scripts only.
-    #   - openai / anthropic / google-genai / markdownify    : data_creation/ batch + run
-    #     scripts only. (Note: the repo uses `google-genai`, not the older
-    #     `google-cloud-aiplatform` / `google-generativeai`.)
     uv pip install --system --break-system-packages \
         "transformers>=5.5.0,<5.6.0" \
         datasets \
@@ -58,21 +40,12 @@ From: nvidia/cuda:12.8.0-cudnn-devel-ubuntu24.04
         safetensors \
         scikit-learn \
         numpy \
-        tqdm \
-        pandas \
-        matplotlib \
-        seaborn \
-        openai \
-        anthropic \
-        google-genai \
-        markdownify
+        tqdm
 
-    # Cleanup
     apt-get autoremove -y
     apt-get clean
     rm -rf /var/lib/apt/lists/*
     uv cache clean
-    find /usr -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 
 %environment
     export CUDA_DEVICE_ORDER=PCI_BUS_ID
@@ -82,16 +55,14 @@ From: nvidia/cuda:12.8.0-cudnn-devel-ubuntu24.04
     exec python "$@"
 
 %help
-    SurfacePrint: Typographic Fingerprints of LLMs — runtime container.
+    SurfacePrint: Typographic Fingerprints of LLMs.
 
-    Provides the environment to run:
-      - ASCII feature extraction and detector training (scripts/train_*.sh)
+    CUDA environment for:
       - Statistical baselines (scripts/statistical/*.sh)
-      - BERT detector / author-attribution train+eval (train_bert_*.py)
-      - Generalization detectors (scripts/generalization/*.sh)
-      - Model-prompt data creation via vLLM and the OpenAI/Anthropic/Google batch APIs
-      - analyze/ scripts (pandas / matplotlib / seaborn)
+      - Embedding detector training and evaluation (train_bert_*.py, eval_bert_*.py)
+
+    SurfacePrint feature extraction and random forests run on CPU.
 
     Usage:
         apptainer run surfaceprint.sif <script.py> [args...]
-        apptainer exec --nv surfaceprint.sif bash scripts/train_unified_ascii_detector_all_data.sh
+        apptainer exec --nv surfaceprint.sif python run_baseline_statistical.py --help

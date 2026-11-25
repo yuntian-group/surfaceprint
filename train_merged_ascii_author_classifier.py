@@ -26,8 +26,6 @@ from sklearn.metrics import (
 
 from detectors.base_detector import BaseDetector
 
-# Sibling module: script directory is on sys.path when invoked as
-# `python scripts/train_merged_ascii_author_classifier.py`.
 import train_merged_ascii_detector as tmd  # noqa: E402
 
 
@@ -357,7 +355,7 @@ def parse_args() -> argparse.Namespace:
         "--normalize-mode",
         choices=["raw", "whitespace"],
         default="raw",
-        help="Same as train_merged_ascii_detector.py.",
+        help="Raw strips leading/trailing whitespace; whitespace deletes ASCII spaces, tabs, CR, and LF.",
     )
     parser.add_argument(
         "--include-dataset",

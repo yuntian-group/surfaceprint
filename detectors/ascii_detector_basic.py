@@ -1,4 +1,4 @@
-"""Binary ASCII/style detector using 45 discovery features (Experiments 2a/2b).
+"""Binary ASCII/style detector using 45 character, word, and formatting indicators.
 
 Each feature is a binary presence check: "does this text contain X?"
 Groups: char (15), word (19), pattern (11).
@@ -18,7 +18,7 @@ import tqdm
 
 from detectors.base_detector import BaseDetector
 
-# --- Character features (Experiment 2a) ------------------------------------
+# --- Character features ------------------------------------
 CHAR_FEATURES_LLM: tuple[tuple[str, str], ...] = (
     ("`", "grave_accent"),
     ("\n", "newline"),
@@ -43,7 +43,7 @@ CHAR_FEATURES_HUMAN: tuple[tuple[str, str], ...] = (
 CHAR_FEATURES: tuple[tuple[str, str], ...] = CHAR_FEATURES_LLM + CHAR_FEATURES_HUMAN
 _CHAR_LOOKUP: tuple[str, ...] = tuple(char for char, _ in CHAR_FEATURES)
 
-# --- Word features (Experiment 2b) -------------------------------------------
+# --- Word features -------------------------------------------
 LLM_WORDS: tuple[str, ...] = (
     "here's",
     "apologize",
@@ -80,7 +80,7 @@ WORD_FEATURES: tuple[tuple[str, str], ...] = tuple(
 )
 _WORD_LOOKUP: tuple[str, ...] = tuple(word for word, _ in WORD_FEATURES)
 
-# --- Formatting pattern features (Experiment 2b) -----------------------------
+# --- Formatting pattern features -----------------------------
 _GREETING_RE = re.compile(
     r"^(Sure|Certainly|Of course|Absolutely|Great question|I'd be happy to|"
     r"I can help|Here's|Here is|That's a great|Thank you for)",
@@ -250,7 +250,7 @@ def extract_feature_matrix(
 
 
 class ASCIIDetectorBasic(BaseDetector):
-    """Decision-tree detector over 45 binary discovery features.
+    """Decision-tree detector over 45 character, word, and formatting indicators.
 
     Config keys match :class:`detectors.ascii_detector.ASCIIDetector`.
     """

@@ -32,11 +32,12 @@ def ensure_forest_model(model: Any) -> None:
 def forest_summary(
     model: Any,
     model_path: Path,
+    registry: aaf.FeatureRegistry,
     feature_names: list[str],
     disabled_feature_groups: list[str],
 ) -> dict[str, Any]:
     summary = aaf.model_summary(
-        model, model_path, feature_names, disabled_feature_groups
+        model, model_path, registry, feature_names, disabled_feature_groups
     )
     estimators = list(model.estimators_)
     depths = [int(est.tree_.max_depth) for est in estimators]
@@ -64,6 +65,7 @@ def split_usage_rows(
     model: Any,
     feature_names: list[str],
     feature_groups: list[str],
+    group_labels: dict[str, str],
 ) -> list[dict[str, Any]]:
     counts: dict[int, int] = defaultdict(int)
     thresholds: dict[int, list[float]] = defaultdict(list)
@@ -92,7 +94,7 @@ def split_usage_rows(
             {
                 "feature_index": feature_idx,
                 "group": group,
-                "group_label": aaf.GROUP_LABELS.get(group, "unknown"),
+                "group_label": group_labels.get(group, "unknown"),
                 "feature": feature_name,
                 "split_count": int(count),
                 "split_fraction": float(count / total_splits) if total_splits else 0.0,
@@ -204,6 +206,12 @@ def parse_args() -> argparse.Namespace:
         default="models/merged_ascii_author_classifiers/models_only_forest.pkl",
     )
     parser.add_argument(
+        "--ascii-detector",
+        choices=[*aaf.REGISTRIES, "auto"],
+        default="auto",
+        help="Feature registry; defaults to the sibling .metrics.json file or a unique feature count.",
+    )
+    parser.add_argument(
         "--top",
         type=int,
         default=None,
@@ -234,16 +242,17 @@ def parse_args() -> argparse.Namespace:
         "--disable-feature-group",
         nargs="+",
         action="extend",
-        default=[],
+        default=None,
         help=(
-            "Feature groups disabled when the model was trained. "
-            "Examples: E, whitespace, A, prose, B, markdown, C, math, D, code."
+            "Feature groups disabled when the model was trained; defaults to the "
+            "sibling .metrics.json file. For full or binary: E, whitespace, A, "
+            "prose, B, markdown, C, math, D, code. For basic: char, word, pattern."
         ),
     )
     parser.add_argument(
         "--disable-whitespace-features",
         action="store_true",
-        help="Analyze a model trained without whitespace/invisible features (group E).",
+        help="Analyze a full or binary model trained without whitespace features (group E).",
     )
     parser.add_argument(
         "--json-output",
@@ -260,28 +269,36 @@ def main() -> None:
     model = aaf.load_model(model_path)
     ensure_forest_model(model)
 
-    disabled_feature_groups = list(args.disable_feature_group)
-    if args.disable_whitespace_features:
-        disabled_feature_groups.append("E")
-    feature_names, feature_groups = aaf.selected_feature_metadata(
-        disabled_feature_groups
+    registry, disabled_feature_groups = aaf.resolve_feature_setup(
+        args.ascii_detector,
+        model,
+        model_path,
+        args.disable_feature_group,
+        args.disable_whitespace_features,
     )
+    feature_names, feature_groups = aaf.selected_feature_metadata(
+        registry, disabled_feature_groups
+    )
+    group_labels = registry.group_labels
 
     all_feature_rows = aaf.feature_importance_rows(
         model,
         include_zero=True,
         feature_names=feature_names,
         feature_groups=feature_groups,
+        group_labels=group_labels,
     )
     feature_rows = (
         all_feature_rows
         if args.show_zero
         else [row for row in all_feature_rows if row["importance"] > 0.0]
     )
-    group_rows = aaf.group_importance_rows(all_feature_rows)
-    split_rows = split_usage_rows(model, feature_names, feature_groups)
+    group_rows = aaf.group_importance_rows(all_feature_rows, group_labels)
+    split_rows = split_usage_rows(model, feature_names, feature_groups, group_labels)
     tree_rows = per_tree_rows(model)
-    summary = forest_summary(model, model_path, feature_names, disabled_feature_groups)
+    summary = forest_summary(
+        model, model_path, registry, feature_names, disabled_feature_groups
+    )
 
     print_forest_summary(summary)
     aaf.print_group_importances(group_rows)

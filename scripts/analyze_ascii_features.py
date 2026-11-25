@@ -18,6 +18,7 @@ if str(ROOT) not in sys.path:
 
 from detectors import ascii_detector as full_ascii
 from detectors import ascii_detector_basic as basic_ascii
+from detectors import ascii_detector_binary as binary_ascii
 from train_merged_ascii_detector import ASCII_DETECTOR_CHOICES
 
 
@@ -57,6 +58,20 @@ REGISTRIES: dict[str, FeatureRegistry] = {
         },
         get_feature_indices=basic_ascii.get_feature_indices,
         disable_whitespace_group=None,
+    ),
+    "binary": FeatureRegistry(
+        name="binary",
+        feature_names=binary_ascii.FEATURE_NAMES,
+        feature_groups=binary_ascii.FEATURE_GROUPS,
+        group_labels={
+            "A": "prose typography",
+            "B": "Markdown structure",
+            "C": "math and LaTeX",
+            "D": "code surface",
+            "E": "whitespace and invisible",
+        },
+        get_feature_indices=binary_ascii.get_feature_indices,
+        disable_whitespace_group="E",
     ),
 }
 
@@ -116,7 +131,7 @@ def resolve_registry_name(
         n_features = getattr(model, "n_features_in_", "?")
         raise ValueError(
             "Could not infer ascii detector automatically. Pass "
-            f"--ascii-detector full or basic (model has {n_features} features)."
+            f"--ascii-detector full, binary, or basic (model has {n_features} features)."
         )
     return detected
 
@@ -148,6 +163,37 @@ def selected_feature_metadata(
         [registry.feature_names[idx] for idx in feature_indices],
         [registry.feature_groups[idx] for idx in feature_indices],
     )
+
+
+def resolve_feature_setup(
+    ascii_detector: str,
+    model: Any,
+    model_path: Path,
+    disabled_feature_groups: list[str] | None,
+    disable_whitespace_features: bool,
+) -> tuple[FeatureRegistry, list[str]]:
+    registry = REGISTRIES[resolve_registry_name(ascii_detector, model, model_path)]
+    if disabled_feature_groups is None:
+        metadata_path = metrics_json_path(model_path)
+        metadata = (
+            json.loads(metadata_path.read_text(encoding="utf-8"))
+            if metadata_path.is_file()
+            else {}
+        )
+        disabled_feature_groups = list(metadata.get("disable_feature_group", []))
+    else:
+        disabled_feature_groups = list(disabled_feature_groups)
+    if disable_whitespace_features:
+        if registry.disable_whitespace_group is None:
+            raise ValueError(
+                "--disable-whitespace-features requires --ascii-detector full or binary."
+            )
+        disabled_feature_groups.append(registry.disable_whitespace_group)
+    disabled_feature_groups = list(dict.fromkeys(disabled_feature_groups))
+    registry = resolve_registry(
+        registry.name, model, model_path, disabled_feature_groups
+    )
+    return registry, disabled_feature_groups
 
 
 def feature_importance_rows(
@@ -436,17 +482,18 @@ def parse_args() -> argparse.Namespace:
         "--disable-feature-group",
         nargs="+",
         action="extend",
-        default=[],
+        default=None,
         help=(
-            "Feature groups disabled when the model was trained. "
-            "For full: E, whitespace, A, prose, B, markdown, C, math, D, code. "
+            "Feature groups disabled when the model was trained; defaults to the "
+            "sibling .metrics.json file. For full or binary: E, whitespace, A, "
+            "prose, B, markdown, C, math, D, code. "
             "For basic: char, word, pattern."
         ),
     )
     parser.add_argument(
         "--disable-whitespace-features",
         action="store_true",
-        help="Analyze a full model trained without whitespace/invisible features (group E).",
+        help="Analyze a full or binary model trained without whitespace features (group E).",
     )
     parser.add_argument(
         "--json-output",
@@ -461,31 +508,13 @@ def main() -> None:
     args = parse_args()
     model_path = Path(args.model)
     model = load_model(model_path)
-    disabled_feature_groups = list(args.disable_feature_group)
-
-    if args.disable_whitespace_features:
-        if args.ascii_detector == "basic":
-            raise ValueError(
-                "--disable-whitespace-features applies only to --ascii-detector=full."
-            )
-        if args.ascii_detector == "auto":
-            detected = resolve_registry_name("auto", model, model_path)
-            if detected == "basic":
-                raise ValueError(
-                    "--disable-whitespace-features applies only to full-feature models."
-                )
-        disabled_feature_groups.append("E")
-
-    registry = resolve_registry(
+    registry, disabled_feature_groups = resolve_feature_setup(
         args.ascii_detector,
         model,
         model_path,
-        disabled_feature_groups,
+        args.disable_feature_group,
+        args.disable_whitespace_features,
     )
-    if args.disable_whitespace_features and registry.name != "full":
-        raise ValueError(
-            "--disable-whitespace-features applies only to full-feature models."
-        )
 
     feature_names, feature_groups = selected_feature_metadata(
         registry, disabled_feature_groups
